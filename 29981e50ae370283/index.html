@@ -2,7 +2,7 @@
 <html lang="zh-CN">
   <head>
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; media-src data: blob:; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
-    <meta name="matrix-build" content="game-breakfast-01-dd083b7d4246">
+    <meta name="matrix-build" content="game-breakfast-01-9181c1ce50fa">
     <meta name="game-id" content="game-breakfast-01">
     <meta name="robots" content="noindex,nofollow">
     <meta charset="UTF-8">
@@ -227,7 +227,8 @@ h3{font-size:18px;line-height:1.35}
 .ending-card{border-top:4px solid var(--gold)}
 .ending-card h2{font-size:clamp(30px,4vw,48px);margin:12px 0}
 .growth-card{border-top:4px solid var(--green)}
-.notice{position:sticky;bottom:12px;z-index:40;margin:12px auto;width:min(720px,calc(100% - 24px));padding:11px 14px;border:1px solid var(--green);border-radius:3px;background:#e5f0ea;color:#173d34;box-shadow:0 8px 28px #24313722}
+.notice{position:fixed;left:50%;bottom:max(12px,env(safe-area-inset-bottom));z-index:40;transform:translateX(-50%);width:min(720px,calc(100% - 24px));padding:11px 14px;border:1px solid var(--green);border-radius:3px;background:#e5f0ea;color:#173d34;box-shadow:0 8px 28px #24313722;pointer-events:none}
+.notice-warning{border-color:#b67728;background:#f8ead2;color:#4e2a10}
 .modal-overlay{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:14px;background:#16252b9e;overflow:auto}
 .save-dialog{width:min(760px,100%);max-height:calc(100svh - 28px);overflow:auto;border-radius:3px;padding:18px}
 .slot-list{display:grid;gap:8px}
@@ -272,7 +273,7 @@ h3{font-size:18px;line-height:1.35}
   .slot-row{grid-template-columns:1fr 1fr}
   .slot-row>span:first-child{grid-column:1/-1}
   .turn-track{grid-template-columns:repeat(6,minmax(0,1fr))}
-  .notice{bottom:calc(var(--mobile-dock-height) + 8px);margin-bottom:0}
+  .notice{bottom:calc(var(--mobile-dock-height) + 8px)}
 }
 @media(max-width:430px){
   .briefing-copy h1{font-size:42px}
@@ -289,7 +290,95 @@ h3{font-size:18px;line-height:1.35}
 @media(prefers-contrast:more){
   :root{--muted:#3e4947;--line:#746a5d;--line-dark:#3b4949}
 }
-`,Bl=[{id:`auto`,label:`自动备份`},{id:`slot-1`,label:`存档一`},{id:`slot-2`,label:`存档二`},{id:`slot-3`,label:`存档三`}],Vl=Rl.portraits,Hl=Rl.scenes,Ul=Rl.icons,Wl={"icon-shift":`today`,"icon-events":`orders`,"icon-prep":`prep-tray`,"icon-griddles":`equipment`,"icon-suppliers":`supplier`,"icon-upgrades":`shop`,"icon-achievements":`goals`},Gl={cash:`cash`,freshness:`fresh-stock`,serviceMargin:`service-margin`,trust:`regulars`};function Z(e){return String(e??``).replaceAll(`&`,`&amp;`).replaceAll(`<`,`&lt;`).replaceAll(`>`,`&gt;`).replaceAll(`"`,`&quot;`).replaceAll(`'`,`&#039;`)}function Kl(e,t){return e===`cash`?`¥${Math.round(t)}`:`${Math.round(t)}%`}function ql(e){return e===`danger`?`危险`:e===`warning`?`告警`:e===`strong`?`良好`:`稳定`}function Jl(e,t){let n=new Blob([t],{type:`application/json`}),r=URL.createObjectURL(n),i=document.createElement(`a`);i.href=r,i.download=e,i.click(),setTimeout(()=>URL.revokeObjectURL(r),1e3)}async function Yl(e){try{return await navigator.clipboard.writeText(e),!0}catch{let t=document.createElement(`textarea`);t.value=e,t.style.position=`fixed`,t.style.left=`-9999px`,document.body.append(t),t.focus(),t.select();let n=document.execCommand(`copy`);return t.remove(),n}}function Xl(e,t=100){let n=Math.max(0,Math.min(100,Math.round(e/t*100)));return`<div class="bar ${n<25?`danger`:n<50?`warning`:``}" aria-hidden="true"><i style="width:${n}%"></i></div>`}function Q(e,t=`context-icon`,n=20){let r=Ul[e]??Ul[e.replace(/^icon-/,``)]??Ul[Wl[e]??``];return r?`<img class="${t}" src="${r}" alt="" width="${n}" height="${n}" aria-hidden="true">`:``}function $(e,t){return`<span class="heading-label">${Q(e,`heading-icon`,22)}<span>${Z(t)}</span></span>`}function Zl(e,t,n){return e?`<picture class="${n}">${e.webp?`<source type="image/webp" srcset="${e.webp}">`:``}<img src="${e.svg}" alt="${Z(t)}" width="${e.width}" height="${e.height}" loading="lazy"></picture>`:``}var Ql=class{root;content;state;activeTab;saveManager=new Nl(`game-breakfast-01`);audio=new Ll;saveRows=[];saveOpen=!1;notice=``;noticeTone=`good`;constructor(e,t){this.root=e,this.content=t,this.state=el(t),this.activeTab=t.tabs[0]?.id??`overview`,this.root.addEventListener(`click`,this.handleClick),this.root.addEventListener(`change`,this.handleChange),this.render(),this.restoreAutoBackup()}envelope(){return El({gameId:`game-breakfast-01`,engineVersion:`2.0.0`,contentVersion:this.content.version,stateVersion:1,state:this.state})}async autoSave(){this.state.phase!==`briefing`&&await this.saveManager.save(`auto`,this.envelope())}async restoreAutoBackup(){try{let e=await this.saveManager.load(`auto`);if(!e)return;this.state=gl(this.content,e.state),this.notice=`已恢复自动备份`,this.noticeTone=`good`,this.render()}catch(e){this.notice=e instanceof Error?`自动备份损坏，原始数据已保留：${e.message}`:`自动备份损坏`,this.noticeTone=`warning`,this.render()}}async setState(e,t,n=`good`){this.state=e,this.notice=t,this.noticeTone=n,e.phase===`ending`&&this.audio.play(`ending`),await this.autoSave(),this.render()}async refreshSaves(){this.saveRows=await this.saveManager.list()}async showNotice(e,t=`good`){this.notice=e,this.noticeTone=t,this.render()}render(){if(this.state.phase===`briefing`||!this.state.log.length){this.root.innerHTML=this.renderBriefing();return}let e=this.content.navigation.find(e=>e.tabIds.includes(this.activeTab))??this.content.navigation[0],t=this.content.tabs.filter(t=>e.tabIds.includes(t.id)),n=rl(this.content,this.state),r=this.state.endingId?this.content.endings.find(e=>e.id===this.state.endingId)??null:null;this.root.innerHTML=`
+
+/* Legacy rain-night palette retained as the product identity. */
+:root{
+  color-scheme:dark;
+  --ink:#f9f1dd;
+  --ink-soft:#d9e4e2;
+  --muted:#b8c9c4;
+  --paper:#08151d;
+  --surface:#102630;
+  --surface-2:#173744;
+  --line:#496874;
+  --line-dark:#78939b;
+  --accent:#f0b44d;
+  --accent-dark:#c98a1b;
+  --green:#79c9a5;
+  --gold:#f0b44d;
+  --danger:#df6658;
+}
+html,body{background:
+  radial-gradient(circle at 14% 0%,#1b3948 0,transparent 36%),
+  radial-gradient(circle at 88% 8%,#2a2425 0,transparent 30%),
+  linear-gradient(#41636d0b 1px,transparent 1px),
+  linear-gradient(90deg,#41636d0b 1px,transparent 1px),
+  #08151d;
+  background-size:auto,auto,32px 32px,32px 32px,auto;
+  color:var(--ink)}
+.briefing-card{background:linear-gradient(145deg,#102630,#173744);border-color:#496874;box-shadow:0 26px 80px #0008}
+.briefing-copy{border-color:#496874}
+.briefing-copy h1{color:var(--ink)}
+.lead{color:#d9e4e2}
+.briefing-scene{border-color:#587985;background:#07141a}
+.fact-strip span{background:#0d2028;border-color:#46636e;color:#d6e2df}
+.briefing-side{background:linear-gradient(180deg,#122a35,#0d2029)}
+.side-heading{border-color:#f0b44d}
+.side-heading span,.name-field small{color:#b8c9c4}
+.name-field input{background:#07141a;border-color:#6b8791;color:#fff}
+.briefing-directions article{background:#0b1c24;border-color:#3e5d68}
+.briefing-directions article:hover{border-left-color:#f0b44d}
+.briefing-directions p{color:#b8c9c4}
+.primary{background:#b83e32;border-color:#efc45f;color:#fff}
+.primary:hover:not(:disabled){background:#d14a3b}
+.game-header{background:#08151ded;border-color:#34515c}
+.header-meta{color:#b8c9c4}
+.header-actions button{background:#102832;border-color:#5c7c87;color:#fff}
+.resource-ribbon{background:#0d2029;border-color:#34515c}
+.resource{background:#102832;border-color:#3c5a65}
+.resource.warning{background:#3a2a14;border-color:#f0b44d}
+.bar{background:#07141b;border-color:#35535e}
+.navigation-heading{background:#102630;border-color:#496874;border-bottom-color:#f0b44d}
+.navigation-heading span{color:#b8c9c4}
+.group-list{background:#102630;border-color:#496874}
+.group-button{color:#d7e4e0;border-color:#34515c}
+.group-button:hover{background:#173744}
+.group-button[aria-current="true"]{background:#f0b44d;color:#17242a;box-shadow:none}
+.tab-list{background:#0d2029;border-color:#496874}
+.tab-button{color:#d7e4e0}
+.tab-button:hover{background:#173744}
+.tab-button[aria-selected="true"]{background:#f0b44d;color:#17242a;box-shadow:none}
+.panel,.event-card,.growth-card,.ending-card,.save-dialog{background:linear-gradient(145deg,#102630,#173744);border-color:#496874;box-shadow:0 18px 60px #0006}
+.panel-header{border-color:#34515c}
+.tag{background:#173b47;border-color:#4f7480;color:#bde5d8}
+.station{background:#0d2028;border-color:#42616c}
+.event-card p{color:#e6eeec}
+.cast-card{background:#0b1c24;border-color:#3e5d68}
+.cast-portrait{border-color:#6d8d97;background:#07141a}
+.choice-button{background:#122d37;border-color:#4f727d;border-left-color:#6b8791;color:#fff}
+.choice-button:hover:not(:disabled){background:#193a46;border-left-color:#f0b44d}
+.choice-button small{color:#d5e1de}
+.action-grid button{background:#102832;border-color:#4f727d;color:#fff}
+.action-grid small{color:#b8c9c4}
+.stage-pill{background:#0d2029;border-color:#3e5d68}
+.stage-pill.active{background:#3a2e19;border-color:#f0b44d;color:#fff}
+.system-row,.batch,.queue-row,.relationship-row,.log-row{background:#0b1c24;border-color:#35525d}
+.relationship-portrait{border-color:#6d8d97;background:#07141a}
+.turn-track{color:#d1ddda}
+.turn-cell{background:#0b1a21;color:#c7d5d1}
+.turn-cell.passed{background:#21463b;color:#fff}
+.turn-cell.current{background:#f0b44d;color:#17242a}
+.notice{background:#12382f;border-color:#76c9a7;color:#fff;box-shadow:0 8px 30px #0008}
+.notice-warning{background:#4a2d13;border-color:#f0b44d;color:#fff8e7}
+.modal-overlay{background:#02070acc}
+.slot-row{background:#0b1c24;border-color:#3e5e69}
+.text-backup{background:#07141a;border-color:#607e87;color:#fff}
+@media(max-width:760px){
+  .group-list{background:#0d2029}
+  .group-button{border-color:#34515c}
+  .group-button[aria-current="true"]{box-shadow:none}
+}
+`,Bl=[{id:`auto`,label:`自动备份`},{id:`slot-1`,label:`存档一`},{id:`slot-2`,label:`存档二`},{id:`slot-3`,label:`存档三`}],Vl=Rl.portraits,Hl=Rl.scenes,Ul=Rl.icons,Wl={"icon-shift":`today`,"icon-events":`orders`,"icon-prep":`prep-tray`,"icon-griddles":`equipment`,"icon-suppliers":`supplier`,"icon-upgrades":`shop`,"icon-achievements":`goals`},Gl={cash:`cash`,freshness:`fresh-stock`,serviceMargin:`service-margin`,trust:`regulars`};function Z(e){return String(e??``).replaceAll(`&`,`&amp;`).replaceAll(`<`,`&lt;`).replaceAll(`>`,`&gt;`).replaceAll(`"`,`&quot;`).replaceAll(`'`,`&#039;`)}function Kl(e,t){return e===`cash`?`¥${Math.round(t)}`:`${Math.round(t)}%`}function ql(e){return e===`danger`?`危险`:e===`warning`?`告警`:e===`strong`?`良好`:`稳定`}function Jl(e,t){let n=new Blob([t],{type:`application/json`}),r=URL.createObjectURL(n),i=document.createElement(`a`);i.href=r,i.download=e,i.click(),setTimeout(()=>URL.revokeObjectURL(r),1e3)}async function Yl(e){try{return await navigator.clipboard.writeText(e),!0}catch{let t=document.createElement(`textarea`);t.value=e,t.style.position=`fixed`,t.style.left=`-9999px`,document.body.append(t),t.focus(),t.select();let n=document.execCommand(`copy`);return t.remove(),n}}function Xl(e,t=100){let n=Math.max(0,Math.min(100,Math.round(e/t*100)));return`<div class="bar ${n<25?`danger`:n<50?`warning`:``}" aria-hidden="true"><i style="width:${n}%"></i></div>`}function Q(e,t=`context-icon`,n=20){let r=Ul[e]??Ul[e.replace(/^icon-/,``)]??Ul[Wl[e]??``];return r?`<img class="${t}" src="${r}" alt="" width="${n}" height="${n}" aria-hidden="true">`:``}function $(e,t){return`<span class="heading-label">${Q(e,`heading-icon`,22)}<span>${Z(t)}</span></span>`}function Zl(e,t,n){return e?`<picture class="${n}">${e.webp?`<source type="image/webp" srcset="${e.webp}">`:``}<img src="${e.svg}" alt="${Z(t)}" width="${e.width}" height="${e.height}" loading="lazy"></picture>`:``}var Ql=class{root;content;state;activeTab;saveManager=new Nl(`game-breakfast-01`);audio=new Ll;saveRows=[];saveOpen=!1;notice=``;noticeTone=`good`;noticeTimer=null;constructor(e,t){this.root=e,this.content=t,this.state=el(t),this.activeTab=t.tabs[0]?.id??`overview`,this.root.addEventListener(`click`,this.handleClick),this.root.addEventListener(`change`,this.handleChange),this.render(),this.restoreAutoBackup()}envelope(){return El({gameId:`game-breakfast-01`,engineVersion:`2.0.0`,contentVersion:this.content.version,stateVersion:1,state:this.state})}async autoSave(){this.state.phase!==`briefing`&&await this.saveManager.save(`auto`,this.envelope())}async restoreAutoBackup(){try{let e=await this.saveManager.load(`auto`);if(!e)return;this.state=gl(this.content,e.state),this.notice=`已恢复自动备份`,this.noticeTone=`good`,this.scheduleNoticeDismiss(),this.render()}catch(e){this.notice=e instanceof Error?`自动备份损坏，原始数据已保留：${e.message}`:`自动备份损坏`,this.noticeTone=`warning`,this.scheduleNoticeDismiss(7e3),this.render()}}scheduleNoticeDismiss(e=4e3){this.noticeTimer&&clearTimeout(this.noticeTimer),this.notice&&(this.noticeTimer=setTimeout(()=>{this.notice=``,this.noticeTimer=null,this.render()},e))}async setState(e,t,n=`good`){this.state=e,this.notice=t,this.noticeTone=n,this.scheduleNoticeDismiss(n===`warning`?7e3:4e3),e.phase===`ending`&&this.audio.play(`ending`),await this.autoSave(),this.render()}async refreshSaves(){this.saveRows=await this.saveManager.list()}async showNotice(e,t=`good`){this.notice=e,this.noticeTone=t,this.scheduleNoticeDismiss(t===`warning`?7e3:4e3),this.render()}render(){if(this.state.phase===`briefing`||!this.state.log.length){this.root.innerHTML=this.renderBriefing();return}let e=this.content.navigation.find(e=>e.tabIds.includes(this.activeTab))??this.content.navigation[0],t=this.content.tabs.filter(t=>e.tabIds.includes(t.id)),n=rl(this.content,this.state),r=this.state.endingId?this.content.endings.find(e=>e.id===this.state.endingId)??null:null;this.root.innerHTML=`
       <style>${zl}</style>
       <div class="app-shell">
         <header class="game-header">
@@ -333,7 +422,7 @@ h3{font-size:18px;line-height:1.35}
             </aside>
           </div>
         </main>
-        ${this.notice?`<div class="notice" role="status">${Z(this.notice)}</div>`:``}
+        ${this.notice?`<div class="notice ${this.noticeTone===`warning`?`notice-warning`:``}" role="status" aria-live="polite" aria-atomic="true">${Z(this.notice)}</div>`:``}
         ${this.saveOpen?this.renderSaveDialog():``}
       </div>
     `}renderBriefing(){return`
@@ -361,7 +450,7 @@ h3{font-size:18px;line-height:1.35}
             <button class="primary start-button" type="button" data-action="start">撑起雨棚，开始第一时段</button>
           </aside>
         </section>
-        ${this.notice?`<div class="notice" role="status">${Z(this.notice)}</div>`:``}
+        ${this.notice?`<div class="notice ${this.noticeTone===`warning`?`notice-warning`:``}" role="status" aria-live="polite" aria-atomic="true">${Z(this.notice)}</div>`:``}
         ${this.saveOpen?this.renderSaveDialog():``}
       </main>
     `}renderTab(e){if(e===`overview`)return this.renderOverview();if(e===`shift`)return this.renderShift();if(e===`events`){let e=rl(this.content,this.state);return e?this.renderEvent(e):this.renderResolvedTurn()}return e===`weather`?this.renderWeather():e===`prep`?this.renderPrep():e===`griddles`?this.renderGriddles():e===`queue`?this.renderQueue():e===`menu`?this.renderMenu():e===`cash`?this.renderResourcePage(`cash`,`现金周转`):e===`suppliers`?this.renderPeoplePage(/供应商|维修|采购/):e===`staff`?this.renderStaff():e===`upgrades`?this.renderUpgrades():e===`customers`?this.renderRelationships(this.content.characters.slice(0,12)):e===`neighborhood`?this.renderDistrict():e===`journal`?this.renderJournal():e===`achievements`?this.renderAchievements():e===`endings`?this.renderEndingProgress():`<div class="panel-header"><div><h2>${Z(this.content.tabs.find(t=>t.id===e)?.label??e)}</h2><p class="muted">该页由内容 schema 声明，尚未提供专用渲染。</p></div></div><p>系统状态与当前事件仍可在右侧处理。</p>`}renderOverview(){return`
@@ -410,7 +499,7 @@ h3{font-size:18px;line-height:1.35}
       </div>
       <label class="name-field"><span>文本备份</span><textarea class="text-backup" id="text-backup" aria-label="文本备份">${Z(Ol(this.envelope()))}</textarea></label>
       <input class="sr-only" id="json-import" type="file" accept="application/json,.json,.txt" aria-label="选择 JSON 存档">
-    </section></div>`}async saveSlot(e){await this.saveManager.save(e,this.envelope()),await this.refreshSaves(),this.audio.play(`save`),await this.showNotice(e===`auto`?`自动备份已保存`:`已保存到 ${Bl.find(t=>t.id===e)?.label??e}`)}async loadSlot(e){let t=await this.saveManager.load(e);if(!t)throw Error(`存档为空`);this.state=gl(this.content,t.state),this.saveOpen=!1,this.audio.play(`confirm`),await this.showNotice(`已读取 ${Bl.find(t=>t.id===e)?.label??e}`)}async restoreEnvelope(e){this.state=gl(this.content,e.state),this.saveOpen=!1,await this.autoSave(),this.audio.play(`confirm`),await this.showNotice(`存档已通过校验并恢复`)}handleClick=e=>{let t=e.target?.closest(`[data-action]`);if(!t)return;let n=t.dataset.action;n&&(async()=>{try{if(n===`start`){let e=this.root.querySelector(`#player-name`);this.state=el(this.content,{seed:this.state.seed,playerName:e?.value});let t=nl(this.content,this.state);this.activeTab=`events`,this.audio.play(`start`),await this.setState(t.state,(t.ok,t.message),t.ok?`good`:`warning`);return}if(n===`toggle-sound`){this.audio.setEnabled(!this.audio.enabled),this.audio.play(`confirm`),this.render();return}if(n===`open-saves`){await this.refreshSaves(),this.saveOpen=!0,this.render();return}if(n===`close-saves`){this.saveOpen=!1,this.render();return}if(n===`new-game`){this.state=el(this.content,{seed:`${Date.now()}`}),this.saveOpen=!1,this.notice=``,this.render();return}if(n===`tab`&&t.dataset.tab){this.activeTab=t.dataset.tab,this.audio.play(`tap`),this.render();return}if(n===`group`&&t.dataset.group){this.activeTab=this.content.navigation.find(e=>e.id===t.dataset.group)?.tabIds[0]??this.activeTab,this.audio.play(`tap`),this.render();return}if(n===`choice`&&t.dataset.choice){let e=al(this.content,this.state,t.dataset.choice);this.audio.play(e.ok?`confirm`:`warn`),await this.setState(e.state,e.message,e.ok?`good`:`warning`);return}if(n===`tool`&&t.dataset.tool){let e=ll(this.content,this.state,t.dataset.tool);this.audio.play(e.ok?`tap`:`warn`),await this.setState(e.state,e.message,e.ok?`good`:`warning`);return}if(n===`growth`&&t.dataset.growth){let e=dl(this.content,this.state,t.dataset.growth);this.audio.play(e.ok?`confirm`:`warn`),await this.setState(e.state,e.message,e.ok?`good`:`warning`);return}if(n===`end-turn`){let e=ml(this.content,this.state);this.audio.play(e.ok?`tap`:`warn`),await this.setState(e.state,e.message,e.ok?`good`:`warning`);return}if(n===`save-slot`&&t.dataset.slot){await this.saveSlot(t.dataset.slot);return}if(n===`load-slot`&&t.dataset.slot){await this.loadSlot(t.dataset.slot);return}if(n===`export-json`){Jl(`game-breakfast-01-${new Date().toISOString().replaceAll(`:`,`-`)}.json`,Ol(this.envelope())),this.audio.play(`save`),await this.showNotice(`JSON 存档已下载`);return}if(n===`import-json`){this.root.querySelector(`#json-import`)?.click();return}if(n===`copy-text`){let e=await Yl(this.root.querySelector(`#text-backup`)?.value??Ol(this.envelope()));this.audio.play(`save`),await this.showNotice(e?`文本备份已复制`:`文本备份已生成，请手动复制`);return}if(n===`restore-text`){let e=kl(this.root.querySelector(`#text-backup`)?.value??``,`game-breakfast-01`);await this.restoreEnvelope(e)}}catch(e){this.audio.play(`warn`),await this.showNotice(e instanceof Error?e.message:String(e),`warning`)}})()};handleChange=e=>{let t=e.target;t&&t.id===`json-import`&&t.files?.[0]&&(async()=>{try{let e=kl(await t.files[0].text(),`game-breakfast-01`);await this.restoreEnvelope(e)}catch(e){this.audio.play(`warn`),await this.showNotice(e instanceof Error?e.message:`导入失败`,`warning`)}finally{t.value=``}})()}},$l={schemaVersion:1,gameId:`game-breakfast-01`,status:`active`,activeInMatrix:!0,content:{turns:120,events:120,tabs:17,systems:20,characters:24,entities:30,endings:6,hiddenEndings:1,choicesPerEvent:3,scenes:10,stages:3,growthGates:2},viewports:[{id:`wide`,width:1440,height:900},{id:`desktop`,width:1024,height:768},{id:`tablet`,width:768,height:1024},{id:`large-phone`,width:430,height:932},{id:`phone`,width:390,height:844},{id:`small-phone`,width:360,height:640}],accessibility:{axeTags:[`wcag2a`,`wcag2aa`,`wcag21aa`],minTouchTargetPx:44,colorIndependentStatus:!0},browser:{playwrightTests:13,visualSnapshots:12,fileProtocol:!0,httpProtocol:!0,maxExternalRequests:0},delivery:{command:`npm run delivery:package`,requiresInternalVerify:!0,immutablePackage:!0,maxSingleHtmlBytes:6291456},testPlan:[{id:`boot-and-briefing`,required:!0},{id:`complete-120-turn-route`,required:!0},{id:`seventeen-tabs`,required:!0},{id:`three-choices-every-event`,required:!0},{id:`cross-event-flag-consumption`,required:!0},{id:`save-three-slots-auto`,required:!0},{id:`save-json-roundtrip`,required:!0},{id:`save-text-roundtrip`,required:!0},{id:`web-audio-mute-persistence`,required:!0},{id:`wcag-axe-zero-violations`,required:!0},{id:`touch-target-44`,required:!0},{id:`six-viewport-no-overflow`,required:!0},{id:`single-file-file-and-http-offline`,required:!0}],visualSnapshots:[{id:`start-desktop`,required:!0},{id:`briefing-mobile`,required:!0},{id:`event-desktop`,required:!0},{id:`event-mobile`,required:!0},{id:`dense-tab-desktop`,required:!0},{id:`dense-tab-mobile`,required:!0},{id:`growth-desktop`,required:!0},{id:`growth-mobile`,required:!0},{id:`ending-desktop`,required:!0},{id:`ending-mobile`,required:!0},{id:`save-dialog-desktop`,required:!0},{id:`save-dialog-mobile`,required:!0}]},eu=document.querySelector(`#app`);if(!eu)throw Error(`缺少游戏挂载点`);function tu(e){return e.replaceAll(`&`,`&amp;`).replaceAll(`<`,`&lt;`).replaceAll(`>`,`&gt;`)}function nu(e,t){throw eu.innerHTML=`
+    </section></div>`}async saveSlot(e){await this.saveManager.save(e,this.envelope()),await this.refreshSaves(),this.audio.play(`save`),await this.showNotice(e===`auto`?`自动备份已保存`:`已保存到 ${Bl.find(t=>t.id===e)?.label??e}`)}async loadSlot(e){let t=await this.saveManager.load(e);if(!t)throw Error(`存档为空`);this.state=gl(this.content,t.state),this.saveOpen=!1,this.audio.play(`confirm`),await this.showNotice(`已读取 ${Bl.find(t=>t.id===e)?.label??e}`)}async restoreEnvelope(e){this.state=gl(this.content,e.state),this.saveOpen=!1,await this.autoSave(),this.audio.play(`confirm`),await this.showNotice(`存档已通过校验并恢复`)}handleClick=e=>{let t=e.target?.closest(`[data-action]`);if(!t)return;let n=t.dataset.action;n&&(async()=>{try{if(n===`start`){let e=this.root.querySelector(`#player-name`);this.state=el(this.content,{seed:this.state.seed,playerName:e?.value});let t=nl(this.content,this.state);this.activeTab=`events`,this.audio.play(`start`),await this.setState(t.state,(t.ok,t.message),t.ok?`good`:`warning`);return}if(n===`toggle-sound`){this.audio.setEnabled(!this.audio.enabled),this.audio.play(`confirm`),this.render();return}if(n===`open-saves`){await this.refreshSaves(),this.saveOpen=!0,this.render();return}if(n===`close-saves`){this.saveOpen=!1,this.render();return}if(n===`new-game`){this.state=el(this.content,{seed:`${Date.now()}`}),this.saveOpen=!1,this.notice=``,this.noticeTimer&&clearTimeout(this.noticeTimer),this.noticeTimer=null,this.render();return}if(n===`tab`&&t.dataset.tab){this.activeTab=t.dataset.tab,this.audio.play(`tap`),this.render();return}if(n===`group`&&t.dataset.group){this.activeTab=this.content.navigation.find(e=>e.id===t.dataset.group)?.tabIds[0]??this.activeTab,this.audio.play(`tap`),this.render();return}if(n===`choice`&&t.dataset.choice){let e=al(this.content,this.state,t.dataset.choice);this.audio.play(e.ok?`confirm`:`warn`),await this.setState(e.state,e.message,e.ok?`good`:`warning`);return}if(n===`tool`&&t.dataset.tool){let e=ll(this.content,this.state,t.dataset.tool);this.audio.play(e.ok?`tap`:`warn`),await this.setState(e.state,e.message,e.ok?`good`:`warning`);return}if(n===`growth`&&t.dataset.growth){let e=dl(this.content,this.state,t.dataset.growth);this.audio.play(e.ok?`confirm`:`warn`),await this.setState(e.state,e.message,e.ok?`good`:`warning`);return}if(n===`end-turn`){let e=ml(this.content,this.state);this.audio.play(e.ok?`tap`:`warn`),await this.setState(e.state,e.message,e.ok?`good`:`warning`);return}if(n===`save-slot`&&t.dataset.slot){await this.saveSlot(t.dataset.slot);return}if(n===`load-slot`&&t.dataset.slot){await this.loadSlot(t.dataset.slot);return}if(n===`export-json`){Jl(`game-breakfast-01-${new Date().toISOString().replaceAll(`:`,`-`)}.json`,Ol(this.envelope())),this.audio.play(`save`),await this.showNotice(`JSON 存档已下载`);return}if(n===`import-json`){this.root.querySelector(`#json-import`)?.click();return}if(n===`copy-text`){let e=await Yl(this.root.querySelector(`#text-backup`)?.value??Ol(this.envelope()));this.audio.play(`save`),await this.showNotice(e?`文本备份已复制`:`文本备份已生成，请手动复制`);return}if(n===`restore-text`){let e=kl(this.root.querySelector(`#text-backup`)?.value??``,`game-breakfast-01`);await this.restoreEnvelope(e)}}catch(e){this.audio.play(`warn`),await this.showNotice(e instanceof Error?e.message:String(e),`warning`)}})()};handleChange=e=>{let t=e.target;t&&t.id===`json-import`&&t.files?.[0]&&(async()=>{try{let e=kl(await t.files[0].text(),`game-breakfast-01`);await this.restoreEnvelope(e)}catch(e){this.audio.play(`warn`),await this.showNotice(e instanceof Error?e.message:`导入失败`,`warning`)}finally{t.value=``}})()}},$l={schemaVersion:1,gameId:`game-breakfast-01`,status:`active`,activeInMatrix:!0,content:{turns:120,events:120,tabs:17,systems:20,characters:24,entities:30,endings:6,hiddenEndings:1,choicesPerEvent:3,scenes:10,stages:3,growthGates:2},viewports:[{id:`wide`,width:1440,height:900},{id:`desktop`,width:1024,height:768},{id:`tablet`,width:768,height:1024},{id:`large-phone`,width:430,height:932},{id:`phone`,width:390,height:844},{id:`small-phone`,width:360,height:640}],accessibility:{axeTags:[`wcag2a`,`wcag2aa`,`wcag21aa`],minTouchTargetPx:44,colorIndependentStatus:!0},browser:{playwrightTests:13,visualSnapshots:12,fileProtocol:!0,httpProtocol:!0,maxExternalRequests:0},delivery:{command:`npm run delivery:package`,requiresInternalVerify:!0,immutablePackage:!0,maxSingleHtmlBytes:6291456},testPlan:[{id:`boot-and-briefing`,required:!0},{id:`complete-120-turn-route`,required:!0},{id:`seventeen-tabs`,required:!0},{id:`three-choices-every-event`,required:!0},{id:`cross-event-flag-consumption`,required:!0},{id:`save-three-slots-auto`,required:!0},{id:`save-json-roundtrip`,required:!0},{id:`save-text-roundtrip`,required:!0},{id:`web-audio-mute-persistence`,required:!0},{id:`wcag-axe-zero-violations`,required:!0},{id:`touch-target-44`,required:!0},{id:`six-viewport-no-overflow`,required:!0},{id:`single-file-file-and-http-offline`,required:!0}],visualSnapshots:[{id:`start-desktop`,required:!0},{id:`briefing-mobile`,required:!0},{id:`event-desktop`,required:!0},{id:`event-mobile`,required:!0},{id:`dense-tab-desktop`,required:!0},{id:`dense-tab-mobile`,required:!0},{id:`growth-desktop`,required:!0},{id:`growth-mobile`,required:!0},{id:`ending-desktop`,required:!0},{id:`ending-mobile`,required:!0},{id:`save-dialog-desktop`,required:!0},{id:`save-dialog-mobile`,required:!0}]},eu=document.querySelector(`#app`);if(!eu)throw Error(`缺少游戏挂载点`);function tu(e){return e.replaceAll(`&`,`&amp;`).replaceAll(`<`,`&lt;`).replaceAll(`>`,`&gt;`)}function nu(e,t){throw eu.innerHTML=`
     <style>
       :root{color-scheme:dark;font-family:"Noto Sans CJK SC","Microsoft YaHei",sans-serif}
       *{box-sizing:border-box}body{margin:0;background:#08151d;color:#f9f1dd}
