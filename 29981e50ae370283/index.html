@@ -2,7 +2,7 @@
 <html lang="zh-CN">
   <head>
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; media-src data: blob:; font-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
-    <meta name="matrix-build" content="game-breakfast-01-b98d8240e4b5">
+    <meta name="matrix-build" content="game-breakfast-01-dd083b7d4246">
     <meta name="game-id" content="game-breakfast-01">
     <meta name="robots" content="noindex,nofollow">
     <meta charset="UTF-8">
@@ -243,6 +243,7 @@ h3{font-size:18px;line-height:1.35}
   .side-column{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:760px){
+  :root{--mobile-dock-height:calc(72px + env(safe-area-inset-bottom))}
   .briefing{width:calc(100% - 20px);padding:18px 0 100px}
   .briefing-card{grid-template-columns:1fr}
   .briefing-copy{padding:26px 22px;border-right:0;border-bottom:1px solid var(--line)}
@@ -253,10 +254,10 @@ h3{font-size:18px;line-height:1.35}
   .header-title h1{font-size:30px;white-space:normal}
   .header-actions{justify-content:flex-start}
   .resource-ribbon{grid-template-columns:repeat(2,minmax(0,1fr));padding:8px 10px}
-  .game-layout{display:block;width:100%;padding:10px 10px 92px}
+  .game-layout{display:block;width:100%;padding:10px 10px calc(var(--mobile-dock-height) + 34px)}
   .navigation{position:static;margin-bottom:10px}
   .navigation-heading{padding:10px 12px}
-  .group-list{position:fixed;left:0;right:0;bottom:0;z-index:60;grid-template-columns:repeat(5,minmax(0,1fr));border-top:1px solid var(--line-dark);border-left:0;border-right:0;border-bottom:0;background:#f8f4eb}
+  .group-list{position:fixed;left:0;right:0;bottom:0;z-index:60;grid-template-columns:repeat(5,minmax(0,1fr));border-top:1px solid var(--line-dark);border-left:0;border-right:0;border-bottom:0;background:#f8f4eb;padding-bottom:env(safe-area-inset-bottom)}
   .group-button{border:0;border-right:1px solid #d4ccbe;text-align:center;padding:7px 2px;font-size:12px}
   .group-button:last-child{border-right:0}
   .group-button[aria-current="true"]{box-shadow:inset 0 3px var(--green)}
@@ -271,6 +272,7 @@ h3{font-size:18px;line-height:1.35}
   .slot-row{grid-template-columns:1fr 1fr}
   .slot-row>span:first-child{grid-column:1/-1}
   .turn-track{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .notice{bottom:calc(var(--mobile-dock-height) + 8px);margin-bottom:0}
 }
 @media(max-width:430px){
   .briefing-copy h1{font-size:42px}
